@@ -1,4 +1,5 @@
 
 <p *ngIf="isLoggedIn">ようこそ {{displayName}} さん</p>
-<button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login()">Log in</button>
+<button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login('google')">Log in by Google</button>
+<button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login('github')">Log in by Github</button>
 <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()">Log out</button>

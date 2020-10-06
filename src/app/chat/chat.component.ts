@@ -30,8 +30,20 @@ export class ChatComponent implements OnInit {
     });
   }
 
-  public login(): void {
-    this.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+  public login(providerName): void {
+    let provider: any;
+    switch (providerName) {
+      case 'github':  // github
+        provider = new firebase.auth.GithubAuthProvider();
+        provider.setCustomParameters({
+          allow_signup: 'false',
+        });
+        break;
+      default:  // google
+        provider = new firebase.auth.GoogleAuthProvider();
+        break;
+    }
+    this.auth.signInWithPopup(provider);
   }
 
   public logout(): void {
