@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "mnes-cp100-3": {
+      "hosting": {
+        "firebase-chat": [
+          "mnes-cp100-3"
+        ]
+      }
+    }
+  }
+}
