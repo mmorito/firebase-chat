@@ -1,5 +1,41 @@
+<div class="container">
+  <div class="header">
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <span>Firebase chat</span>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </div>
 
-<p *ngIf="isLoggedIn">ようこそ {{displayName}} さん</p>
-<button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login('google')">Log in by Google</button>
-<button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login('github')">Log in by Github</button>
-<button mat-raised-button *ngIf="isLoggedIn" (click)="logout()">Log out</button>
+  <div class="main">
+    <div class="login">
+      <span class="display-name" *ngIf="isLoggedIn">Login as {{displayName}}</span>
+      <button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login('google')">Log in by Google</button>
+      <button mat-raised-button color="primary" *ngIf="!isLoggedIn" (click)="login('github')">Log in by Github</button>
+      <button mat-raised-button *ngIf="isLoggedIn" (click)="logout()">Log out</button>
+    </div>
+
+    <div class="chat-area">
+      <mat-card *ngFor="let item of items">
+        <mat-card-header>
+          <div mat-card-avatar class="example-header-image"></div>
+          <mat-card-title>{{ item?.displayName }}</mat-card-title>
+          <mat-card-subtitle>{{ item?.date | date:'y/MM/dd HH:mm:ss' }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>{{ item?.message }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="footer">
+    <form>
+      <mat-form-field>
+        <mat-label>Enter a message</mat-label>
+        <input matInput type="text" [(ngModel)]="message" [ngModelOptions]="{standalone: true}">
+      </mat-form-field>
+      <mat-icon aria-hidden="false" (click)="send()">send</mat-icon>
+    </form>
+  </div>
+</div>

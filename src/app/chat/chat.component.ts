@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { AngularFireAuth } from '@angular/fire/auth';
 import firebase from 'firebase/app';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { AngularFireDatabase } from '@angular/fire/database';
+
 
 @Component({
   selector: 'app-chat',
@@ -11,18 +13,32 @@ import firebase from 'firebase/app';
   styleUrls: ['./chat.component.scss'],
 })
 export class ChatComponent implements OnInit {
-  private readonly userDisposable: Subscription | undefined;
   public isLoggedIn = false;
   public displayName = '';
 
-  constructor(public auth: AngularFireAuth) {
-    this.userDisposable = this.auth.authState
+  public items: any[];
+
+  public message = '';
+
+  constructor(public auth: AngularFireAuth, private db: AngularFireDatabase) {
+    this.auth.authState
       .pipe(map((u) => !!u))
-      .subscribe((isLoggedIn) => this.isLoggedIn = isLoggedIn);
+      .subscribe((isLoggedIn) => {
+        this.isLoggedIn = isLoggedIn;
+        db.list('chat/items')
+          .valueChanges()
+          .subscribe((items: any[]) => {
+            this.items = [];
+            items.forEach(item => {
+              item.date = new Date(item.date);
+              this.items.push(item);
+            });
+          });
+      });
   }
 
   ngOnInit(): void {
-    this.auth.onAuthStateChanged(user => {
+    this.auth.onAuthStateChanged((user) => {
       this.displayName = '';
       if (user) {
         this.displayName = user.displayName;
@@ -33,13 +49,14 @@ export class ChatComponent implements OnInit {
   public login(providerName): void {
     let provider: any;
     switch (providerName) {
-      case 'github':  // github
+      case 'github': // github
         provider = new firebase.auth.GithubAuthProvider();
         provider.setCustomParameters({
           allow_signup: 'false',
         });
         break;
-      default:  // google
+      default:
+        // google
         provider = new firebase.auth.GoogleAuthProvider();
         break;
     }
@@ -50,5 +67,15 @@ export class ChatComponent implements OnInit {
     this.auth.signOut();
   }
 
-
+  public send(): void {
+    if (!this.message) {
+      return;
+    }
+    this.db.list('chat/items').push({
+      displayName: this.displayName,
+      message: this.message,
+      date: new Date().getTime(),
+    });
+    this.message = '';
+  }
 }
